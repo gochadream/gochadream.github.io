@@ -1,0 +1,28 @@
+- links:
+  - name: 홈
+    link: /
+  - name: 소개
+    link: /about
+  - name: 작업사례
+    link: /blog
+  - name: 상담문의
+    link: /contact
+  - name: 블로그
+    link: https://blog.naver.com/gochadream
+# - links:
+#   - name: Facebook
+#     link: https://facebook.com/cloudcannon/
+#     new_window: true
+#     social_icon: Facebook
+#   - name: Twitter
+#     link: https://twitter.com/cloudcannon/
+#     social_icon: Twitter
+#     new_window: true
+#   - name: YouTube
+#     link: https://youtube.com/cloudcannon/
+#     social_icon: YouTube
+#     new_window: true
+#   - name: RSS
+#     link: /feed.xml
+#     social_icon: RSS
+#     new_window: false

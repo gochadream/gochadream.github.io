@@ -1,0 +1,24 @@
+- name: 홈
+  link: /
+  new_window: false
+  highlight: false
+- name: 소개
+  link: /about
+  new_window: false
+  highlight: false
+- name: 작업사례
+  link: /blog
+  new_window: false
+  highlight: false
+# - name: About
+#   link: /pricing/
+#   new_window: false
+#   highlight: false
+- name: 상담문의
+  link: /contact
+  new_window: false
+  highlight: false
+- name: 블로그
+  link: https://blog.naver.com/gochadream
+  new_window: true
+  highlight: false
