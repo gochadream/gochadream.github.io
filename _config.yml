@@ -18,7 +18,7 @@ collections:
     _hide_content: true
 
 paginate: 10
-paginate_path: "/work/:num/"
+paginate_path: "/works/:num/"
 permalink: pretty
 
 defaults:
