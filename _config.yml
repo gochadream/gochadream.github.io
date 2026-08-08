@@ -26,6 +26,7 @@ defaults:
       type: "posts"
     values:
       layout: "post"
+      permalink: /작업사례/:year-:month-:day-:title/
       _options:
         content:
           width: 1500
