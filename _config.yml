@@ -7,7 +7,8 @@ baseurl: ""
 
 # Values for the jekyll-seo-tag gem (https://github.com/jekyll/jekyll-seo-tag)
 logo: "/siteicon.png"
-email: "thegochadream@gmail.com"
+description: Product marketing template for Jekyll.
+email:
 
 # -----
 # Build
@@ -17,7 +18,7 @@ collections:
     _hide_content: true
 
 paginate: 10
-paginate_path: "/works/:num/"
+paginate_path: "/work/:num/"
 permalink: pretty
 
 defaults:
@@ -61,6 +62,9 @@ plugins:
   - jekyll-seo-tag
   - jekyll-feed
   - jekyll-paginate
+
+paginate: 10
+paginate_path: "/works/page:num/"
 
 exclude:
   - Gemfile

@@ -2,8 +2,6 @@
 title: 작업사례
 description: 고쳐드림이 진행한 다양한 작업 사례를 사진과 함께 소개합니다
 permalink: /works/
-pagination:
-  enabled: true
 ---
 
 <div class="text-container">
@@ -36,8 +34,27 @@ pagination:
 	</ul>
 
 	{% if paginator.total_pages > 1 %}
-	...
+		<div class="pagination">
+
+			{% if paginator.previous_page %}
+				<a href="{{ paginator.previous_page_path | relative_url }}">
+					← 이전
+				</a>
+			{% endif %}
+
+			<span>
+				{{ paginator.page }} / {{ paginator.total_pages }}
+			</span>
+
+			{% if paginator.next_page %}
+				<a href="{{ paginator.next_page_path | relative_url }}">
+					다음 →
+				</a>
+			{% endif %}
+
+		</div>
 	{% endif %}
+
 
 </div>
 
