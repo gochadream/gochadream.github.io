@@ -73,6 +73,13 @@ exclude:
   - LICENSE
 
 sitemap: true
+
+defaults:
+  - scope:
+      path: "_posts"
+      type: posts
+    values:
+      permalink: /작업사례/:year-:month-:day-:title
 # -----------
 # CloudCannon
 
