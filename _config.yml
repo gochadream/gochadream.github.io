@@ -73,12 +73,7 @@ exclude:
 
 sitemap: true
 
-defaults:
-  - scope:
-      path: "_posts"
-      type: posts
-    values:
-      permalink: /works/:year-:month-:day-:title/
+
 # -----------
 # CloudCannon
 
