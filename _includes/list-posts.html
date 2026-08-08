@@ -1,19 +1,17 @@
 {% for post in include.posts %}
 <li class="blog-post"
-    data-category="{{ post.categories | join: ',' }}">
-
+	data-category="{{ post.categories | join: ',' }}">
 
 	<div class="post-thumbnail">
 		{% if post.image %}
-		<img src="{{ post.image }}" alt="{{ post.title }}">
+			<img src="{{ post.image }}" alt="{{ post.title }}">
 		{% endif %}
 	</div>
-
 
 	<div class="post-info">
 
 		<h3>
-			<a href="{% include relative-src.html src=post.url %}">
+			<a href="{{ post.url | relative_url }}">
 				{{ post.title }}
 			</a>
 		</h3>
@@ -21,13 +19,13 @@
 		{% include post-title.html post=post %}
 
 		<div class="post-content">
-			<!-- {{ post.excerpt | strip_html | truncate: 200}} -->
 
 			<div class="button">
-				<a href="{% include relative-src.html src=post.url %}">
+				<a href="{{ post.url | relative_url }}">
 					더보기
 				</a>
 			</div>
+
 		</div>
 
 	</div>
