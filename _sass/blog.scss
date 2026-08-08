@@ -151,6 +151,27 @@
 		color: #555;
 	}
 
+	.blog-post .post-gallery {
+
+		width:calc(100% - 20px);
+		margin-left:auto;
+		margin-right:auto;
+
+	}
+
+
+	.blog-post.text-container {
+		padding-left:20px;
+		padding-right:20px;
+	}
+
+	.blog-post .post-gallery {
+		width:calc(100% - 20px);
+		margin-left:auto;
+		margin-right:auto;
+	}
+
+
 
 	/* 더보기 버튼 */
 	.blog-post .button {
@@ -472,11 +493,11 @@
 
 
 
-.blog-post.text-container .post-content {
+.blog-post .post-content {
 	text-align:center;
 }
 
-.blog-post.text-container .post-gallery {
+.blog-post .post-gallery {
 	display:grid;
 	grid-template-columns:repeat(2, 1fr);
 	gap:20px;
@@ -484,7 +505,7 @@
 	margin:40px auto;
 }
 
-.blog-post.text-container .post-gallery img {
+.blog-post .post-gallery img {
 	width:100%;
 	border-radius:8px;
 }
@@ -496,11 +517,12 @@
 	text-align:center !important;
 }
 
-.blog-post.text-container .post-content h2 {
+.blog-post .post-content h2 {
 	color:#222;
 	font-size:32px;
 	margin:60px 0 30px;
 	font-weight:700;
+	text-align: center !important;
 }
 
 
