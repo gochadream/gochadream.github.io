@@ -2,8 +2,8 @@
 # Site
 
 title: 고쳐드림
-url: ""
-baseurl: "https://www.gochyodream.com"
+url: "https://www.gochyodream.com"
+baseurl: ""
 
 # Values for the jekyll-seo-tag gem (https://github.com/jekyll/jekyll-seo-tag)
 logo: "/siteicon.png"
