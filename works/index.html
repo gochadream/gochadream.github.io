@@ -1,7 +1,7 @@
 ---
+layout: default
 title: 작업사례
 description: 고쳐드림이 진행한 다양한 작업 사례를 사진과 함께 소개합니다
-permalink: /works/
 ---
 
 <div class="text-container">
@@ -27,7 +27,6 @@ permalink: /works/
 		{% endfor %}
 
 	</div>
-
 
 	<ul class="blog-posts">
 		{% include list-posts.html posts=paginator.posts %}
@@ -55,41 +54,26 @@ permalink: /works/
 		</div>
 	{% endif %}
 
-
 </div>
 
 <script>
+const buttons = document.querySelectorAll(".category-filter button");
+const posts = document.querySelectorAll(".blog-post");
 
-const buttons=document.querySelectorAll(".category-filter button");
-const posts=document.querySelectorAll(".blog-post");
-
-buttons.forEach(button=>{
-
-	button.onclick=()=>{
-
-		buttons.forEach(b=>b.classList.remove("active"));
+buttons.forEach(button => {
+	button.onclick = () => {
+		buttons.forEach(b => b.classList.remove("active"));
 		button.classList.add("active");
 
-		const category=button.dataset.category;
+		const category = button.dataset.category;
 
-		posts.forEach(post=>{
-
-			if(category==="all" ||
-    			post.dataset.category.split(",").includes(category)){
-
-
-				post.style.display="";
-
-			}else{
-
-				post.style.display="none";
-
+		posts.forEach(post => {
+			if (category === "all" || (post.dataset.category && post.dataset.category.split(",").includes(category))) {
+				post.style.display = "";
+			} else {
+				post.style.display = "none";
 			}
-
 		});
-
 	};
-
 });
-
 </script>
