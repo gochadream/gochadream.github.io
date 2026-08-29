@@ -1,73 +1,120 @@
 ---
 layout: page
 ---
+
+<!-- 네이버 및 구글 SEO용 브레드크럼 (BreadcrumbList) JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "작업사례",
+      "item": "{{ site.url }}/works/"
+    }
+    {% assign pos = 2 %}
+    {% if page.categories %}
+      {% for cat in page.categories %}
+      ,{
+        "@type": "ListItem",
+        "position": {{ pos }},
+        "name": "{{ cat }}",
+        "item": "{{ site.url }}/works/?tab={{ cat | url_encode }}"
+      }
+      {% assign pos = pos | plus: 1 %}
+      {% endfor %}
+    {% endif %}
+    ,{
+      "@type": "ListItem",
+      "position": {{ pos }},
+      "name": "{{ page.title | escape }}",
+      "item": "{{ site.url }}{{ page.url }}"
+    }
+  ]
+}
+</script>
+
 <div class="blog-post single-post">
-	<p class="editor-link"><a href="cloudcannon:collections/{{ page.path }}" class="btn"><strong>&#9998;</strong> Edit Post</a></p>
-	<div class="post-content">
-		<p class="post-date">
-			{{ page.date | date: "%Y-%m-%d" }}
-		</p>
-		<hr class="post-line">
-		
-		{{ content }}
+    <p class="editor-link"><a href="cloudcannon:collections/{{ page.path }}" class="btn"><strong>&#9998;</strong> Edit Post</a></p>
+    
+    <div class="post-content">
+        <!-- 화면 노출용 브레드크럼 (작업사례 > 카테고리1 > 카테고리2 > 제목) -->
+        <nav class="breadcrumb-nav" aria-label="breadcrumb" style="margin-bottom: 1rem; font-size: 0.9rem; color: #666;">
+            <a href="/works/" style="color: #666; text-decoration: none;">작업사례</a>
+            {% if page.categories %}
+                {% for cat in page.categories %}
+                    &gt; <a href="/works/?tab={{ cat | url_encode }}" style="color: #666; text-decoration: none;">{{ cat }}</a>
+                {% endfor %}
+            {% endif %}
+            &gt; <span style="color: #333; font-weight: 500;">{{ page.title }}</span>
+        </nav>
+
+        <p class="post-date">
+            {{ page.date | date: "%Y-%m-%d" }}
+        </p>
+        <hr class="post-line">
+        
+        {{ content }}
 
 
-		{% if page.categories %}
+        {% if page.categories %}
 
-		<div class="related-posts">
+        <div class="related-posts">
 
-			<h2><strong>관련 작업 사례</strong></h2>
+            <h2><strong>관련 작업 사례</strong></h2>
 
-			<ul>
+            <ul>
 
-			{% assign count = 0 %}
+            {% assign count = 0 %}
 
-			{% for post in site.posts %}
+            {% for post in site.posts %}
 
-				{% if post.url != page.url %}
+                {% if post.url != page.url %}
 
-					{% assign matched = false %}
+                    {% assign matched = false %}
 
-					{% for category in page.categories %}
+                    {% for category in page.categories %}
 
-						{% if post.categories contains category %}
-							{% assign matched = true %}
-						{% endif %}
+                        {% if post.categories contains category %}
+                            {% assign matched = true %}
+                        {% endif %}
 
-					{% endfor %}
+                    {% endfor %}
 
-					{% if matched and count < 5 %}
+                    {% if matched and count < 5 %}
 
-						<li>
-							<a href="{{ post.url }}">{{ post.title }}</a>
-							<span>{{ post.date | date: "%Y.%m.%d" }}</span>
-						</li>
+                        <li>
+                            <a href="{{ post.url }}">{{ post.title }}</a>
+                            <span>{{ post.date | date: "%Y.%m.%d" }}</span>
+                        </li>
 
-						{% assign count = count | plus: 1 %}
+                        {% assign count = count | plus: 1 %}
 
-					{% endif %}
+                    {% endif %}
 
-				{% endif %}
+                {% endif %}
 
-			{% endfor %}
+            {% endfor %}
 
-			</ul>
+            </ul>
 
-		</div>
-
-
+        </div>
 
 
-		<div class="blog-navigation">
-			{% if page.previous.url %}
-				<a class="prev" href="{% include relative-src.html src=page.previous.url %}">&laquo; {{ page.previous.title }}</a>
-			{% endif %}
-			{% if page.next.url %}
-				<a class="next" href="{% include relative-src.html src=page.next.url %}">{{ page.next.title }} &raquo;</a>
-			{% endif %}
-		</div>
 
-		{% endif %}
 
-	</div>
+        <div class="blog-navigation">
+            {% if page.previous.url %}
+                <a class="prev" href="{% include relative-src.html src=page.previous.url %}">&laquo; {{ page.previous.title }}</a>
+            {% endif %}
+            {% if page.next.url %}
+                <a class="next" href="{% include relative-src.html src=page.next.url %}">{{ page.next.title }} &raquo;</a>
+            {% endif %}
+        </div>
+
+        {% endif %}
+
+    </div>
 </div>
