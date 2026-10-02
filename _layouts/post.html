@@ -40,17 +40,6 @@ layout: page
     <p class="editor-link"><a href="cloudcannon:collections/{{ page.path }}" class="btn"><strong>&#9998;</strong> Edit Post</a></p>
     
     <div class="post-content">
-        <!-- 화면 노출용 브레드크럼 (작업사례 > 카테고리1 > 카테고리2 > 제목) -->
-        <nav class="breadcrumb-nav" aria-label="breadcrumb" style="margin-bottom: 1rem; font-size: 0.9rem; color: #666;">
-            <a href="/works/" style="color: #666; text-decoration: none;">작업사례</a>
-            {% if page.categories %}
-                {% for cat in page.categories %}
-                    &gt; <a href="/works/?tab={{ cat | url_encode }}" style="color: #666; text-decoration: none;">{{ cat }}</a>
-                {% endfor %}
-            {% endif %}
-            &gt; <span style="color: #333; font-weight: 500;">{{ page.title }}</span>
-        </nav>
-
         <p class="post-date">
             {{ page.date | date: "%Y-%m-%d" }}
         </p>
