@@ -15,13 +15,13 @@ description: 고쳐드림이 진행한 다양한 작업 사례를 사진과 함�
 
     <!-- 카테고리 필터 -->
     <div class="category-filter">
-        <button class="active" data-category="all">
+        <button type="button" class="active" data-category="all">
             전체
         </button>
 
         {% assign categories = site.categories | sort %}
         {% for category in categories %}
-            <button data-category="{{ category[0] | escape }}">
+            <button type="button" data-category="{{ category[0] | escape }}">
                 {{ category[0] }}
             </button>
         {% endfor %}
@@ -32,33 +32,15 @@ description: 고쳐드림이 진행한 다양한 작업 사례를 사진과 함�
         {% include list-posts.html posts=site.posts %}
     </ul>
 
-    <!-- 숫자형 페이지네이션 -->
-    <nav
-        class="pagination"
-        id="pagination-controls"
-        aria-label="작업사례 페이지 이동"
-    >
-        <button
-            type="button"
-            id="prev-group-btn"
-            class="page-nav-btn"
-            aria-label="이전 페이지 번호 묶음"
-        >
+    <!-- 페이지네이션 -->
+    <nav id="pagination-controls" aria-label="작업사례 페이지 이동">
+        <button type="button" id="prev-group-btn" class="page-nav-btn">
             &laquo; 이전
         </button>
 
-        <div
-            class="page-numbers"
-            id="page-numbers"
-            aria-label="페이지 번호"
-        ></div>
+        <div id="page-numbers"></div>
 
-        <button
-            type="button"
-            id="next-group-btn"
-            class="page-nav-btn"
-            aria-label="다음 페이지 번호 묶음"
-        >
+        <button type="button" id="next-group-btn" class="page-nav-btn">
             다음 &raquo;
         </button>
     </nav>
@@ -66,7 +48,6 @@ description: 고쳐드림이 진행한 다양한 작업 사례를 사진과 함�
 </div>
 
 <style>
-    /* 페이지네이션 전체 */
     #pagination-controls {
         display: none;
         justify-content: center;
@@ -76,8 +57,7 @@ description: 고쳐드림이 진행한 다양한 작업 사례를 사진과 함�
         margin: 2.5rem 0 2rem;
     }
 
-    /* 페이지 번호 영역 */
-    #pagination-controls .page-numbers {
+    #page-numbers {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -85,219 +65,104 @@ description: 고쳐드림이 진행한 다양한 작업 사례를 사진과 함�
         gap: 6px;
     }
 
-    /* 페이지 번호 및 이전/다음 버튼 공통 */
     #pagination-controls button {
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        min-width: 42px;
-        height: 42px;
-        padding: 0 12px;
+        min-width: 40px;
+        height: 40px;
+        padding: 0 10px;
         border: 1px solid #ddd;
         border-radius: 6px;
         background: #fff;
         color: #333;
         font-size: 15px;
-        line-height: 1;
         cursor: pointer;
-        transition:
-            background-color 0.2s ease,
-            color 0.2s ease,
-            border-color 0.2s ease;
     }
 
-    /* 마우스 오버 */
     #pagination-controls button:hover:not(:disabled) {
+        background: #f0f0f0;
         border-color: #333;
-        background: #f3f3f3;
     }
 
-    /* 현재 페이지 */
     #pagination-controls button.active {
-        border-color: #333;
         background: #333;
+        border-color: #333;
         color: #fff;
-        font-weight: 700;
+        font-weight: bold;
     }
 
-    /* 현재 페이지의 포커스 표시 */
-    #pagination-controls button:focus-visible {
-        outline: 2px solid #555;
-        outline-offset: 3px;
-    }
-
-    /* 비활성화된 버튼 */
     #pagination-controls button:disabled {
-        opacity: 0.35;
+        opacity: 0.4;
         cursor: not-allowed;
     }
 
-    /* 모바일 대응 */
     @media (max-width: 480px) {
         #pagination-controls {
-            gap: 5px;
-        }
-
-        #pagination-controls .page-numbers {
             gap: 4px;
         }
 
+        #page-numbers {
+            gap: 3px;
+        }
+
         #pagination-controls button {
-            min-width: 34px;
+            min-width: 32px;
             height: 36px;
-            padding: 0 8px;
+            padding: 0 7px;
             font-size: 13px;
         }
     }
 </style>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    const postsPerPage = 9;       // 한 페이지당 포스트 수
-    const pageButtonsPerGroup = 10; // 한 번에 표시할 페이지 번호 수
+(function () {
+    function initPagination() {
+        const postsPerPage = 9;
+        const pagesPerGroup = 10;
 
-    let currentPage = 1;
+        const postList = document.getElementById("post-list");
+        const pagination = document.getElementById("pagination-controls");
+        const pageNumbers = document.getElementById("page-numbers");
+        const prevButton = document.getElementById("prev-group-btn");
+        const nextButton = document.getElementById("next-group-btn");
 
-    const buttons = document.querySelectorAll(
-        ".category-filter button"
-    );
-
-    const allPosts = Array.from(
-        document.querySelectorAll("#post-list .blog-post")
-    );
-
-    const paginationContainer = document.getElementById(
-        "pagination-controls"
-    );
-
-    const pageNumbers = document.getElementById("page-numbers");
-    const prevGroupBtn = document.getElementById("prev-group-btn");
-    const nextGroupBtn = document.getElementById("next-group-btn");
-
-    // URL에서 카테고리 읽기
-    function getCategoryFromURL() {
-        const params = new URLSearchParams(window.location.search);
-        return params.get("tab") || "all";
-    }
-
-    // URL에서 페이지 번호 읽기
-    function getPageFromURL() {
-        const params = new URLSearchParams(window.location.search);
-        const page = parseInt(params.get("page"), 10);
-
-        return Number.isInteger(page) && page > 0 ? page : 1;
-    }
-
-    // 현재 카테고리에 해당하는 포스트 가져오기
-    function getFilteredPosts() {
-        const currentCategory = getCategoryFromURL();
-
-        return allPosts.filter(post => {
-            if (currentCategory === "all") {
-                return true;
-            }
-
-            const categories = (post.dataset.category || "")
-                .split(",")
-                .map(category => category.trim());
-
-            return categories.includes(currentCategory);
-        });
-    }
-
-    // URL 변경
-    function updateURL(page, category, replace = false) {
-        const params = new URLSearchParams(window.location.search);
-
-        if (category === "all") {
-            params.delete("tab");
-        } else {
-            params.set("tab", category);
-        }
-
-        if (page <= 1) {
-            params.delete("page");
-        } else {
-            params.set("page", String(page));
-        }
-
-        const query = params.toString();
-
-        const newURL =
-            window.location.pathname +
-            (query ? "?" + query : "") +
-            window.location.hash;
-
-        if (replace) {
-            window.history.replaceState(null, "", newURL);
-        } else {
-            window.history.pushState(null, "", newURL);
-        }
-    }
-
-    // 페이지 이동
-    function goToPage(page) {
-        const filteredPosts = getFilteredPosts();
-        const totalPages = Math.ceil(
-            filteredPosts.length / postsPerPage
-        );
-
-        if (totalPages === 0) {
+        if (!postList || !pagination || !pageNumbers || !prevButton || !nextButton) {
             return;
         }
 
-        const targetPage = Math.max(
-            1,
-            Math.min(page, totalPages)
+        const categoryButtons = Array.from(
+            document.querySelectorAll(".category-filter button")
         );
 
-        currentPage = targetPage;
-
-        updateURL(targetPage, getCategoryFromURL());
-        updateDisplay();
-
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-    }
-
-    // 페이지 번호 버튼 생성
-    function renderPageNumbers(totalPages) {
-        pageNumbers.innerHTML = "";
-
-        // 현재 페이지가 속한 번호 묶음 계산
-        // 예: 1~10, 11~20, 21~30
-        const currentGroup = Math.floor(
-            (currentPage - 1) / pageButtonsPerGroup
+        const posts = Array.from(
+            postList.querySelectorAll(".blog-post")
         );
 
-        const startPage =
-            currentGroup * pageButtonsPerGroup + 1;
+        let currentPage = 1;
 
-        const endPage = Math.min(
-            startPage + pageButtonsPerGroup - 1,
-            totalPages
-        );
+        function readURL() {
+            const params = new URLSearchParams(window.location.search);
 
-        // 현재 번호 묶음의 페이지 버튼 생성
-        for (let page = startPage; page <= endPage; page++) {
-            const button = document.createElement("button");
+            const pageValue = parseInt(params.get("page"), 10);
+            const category = params.get("tab") || "all";
 
-            button.type = "button";
-            button.textContent = String(page);
-            button.className = "page-number";
+            return {
+                page: Number.isFinite(pageValue) && pageValue > 0
+                    ? pageValue
+                    : 1,
+                category: category
+            };
+        }
 
-            // 페이지별 고유 URL을 링크처럼 확인할 수 있도록 설정
-            const params = new URLSearchParams(
-                window.location.search
-            );
+        function writeURL(page, category, replace) {
+            const params = new URLSearchParams(window.location.search);
 
-            if (getCategoryFromURL() === "all") {
+            if (category === "all") {
                 params.delete("tab");
+            } else {
+                params.set("tab", category);
             }
 
-            if (page === 1) {
+            // 첫 페이지는 별도 page 파라미터를 사용하지 않음
+            if (page <= 1) {
                 params.delete("page");
             } else {
                 params.set("page", String(page));
@@ -305,160 +170,221 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const query = params.toString();
 
-            button.dataset.url =
-                window.location.pathname +
+            const url = window.location.pathname +
                 (query ? "?" + query : "") +
                 window.location.hash;
 
-            if (page === currentPage) {
-                button.classList.add("active");
-                button.setAttribute("aria-current", "page");
-                button.setAttribute("aria-label", `현재 페이지 ${page}`);
+            if (replace) {
+                window.history.replaceState(null, "", url);
             } else {
-                button.setAttribute("aria-label", `${page} 페이지`);
+                window.history.pushState(null, "", url);
             }
-
-            button.addEventListener("click", () => {
-                goToPage(page);
-            });
-
-            pageNumbers.appendChild(button);
         }
 
-        // 이전/다음 번호 묶음 버튼 상태
-        prevGroupBtn.disabled = currentGroup === 0;
-        nextGroupBtn.disabled = endPage >= totalPages;
+        function getFilteredPosts(category) {
+            return posts.filter(function (post) {
+                if (category === "all") {
+                    return true;
+                }
 
-        prevGroupBtn.style.display =
-            currentGroup === 0 ? "none" : "inline-flex";
+                const postCategories = (post.dataset.category || "")
+                    .split(",")
+                    .map(function (item) {
+                        return item.trim();
+                    });
 
-        nextGroupBtn.style.display =
-            endPage >= totalPages ? "none" : "inline-flex";
-    }
+                return postCategories.includes(category);
+            });
+        }
 
-    // 화면 업데이트
-    function updateDisplay() {
-        const currentCategory = getCategoryFromURL();
-        const filteredPosts = getFilteredPosts();
+        function render() {
+            const urlState = readURL();
+            const category = urlState.category;
+            const filteredPosts = getFilteredPosts(category);
 
-        const totalPages = Math.ceil(
-            filteredPosts.length / postsPerPage
-        );
-
-        // URL에 없는 카테고리가 지정된 경우 전체 카테고리로 복구
-        const categoryExists =
-            currentCategory === "all" ||
-            Array.from(buttons).some(
-                button => button.dataset.category === currentCategory
+            const totalPages = Math.ceil(
+                filteredPosts.length / postsPerPage
             );
 
-        if (!categoryExists) {
-            updateURL(1, "all", true);
-            currentPage = 1;
-            return updateDisplay();
+            const safeTotalPages = Math.max(1, totalPages);
+
+            // URL에 기록된 페이지를 범위 안으로 조정
+            currentPage = Math.min(
+                Math.max(1, urlState.page),
+                safeTotalPages
+            );
+
+            // 유효하지 않은 페이지 주소를 정리
+            if (urlState.page !== currentPage) {
+                writeURL(currentPage, category, true);
+            }
+
+            // 카테고리 버튼 활성화
+            categoryButtons.forEach(function (button) {
+                const active = button.dataset.category === category;
+
+                button.classList.toggle("active", active);
+                button.setAttribute("aria-pressed", String(active));
+            });
+
+            // 모든 포스트 숨기기
+            posts.forEach(function (post) {
+                post.style.display = "none";
+            });
+
+            // 현재 페이지 포스트 표시
+            const start = (currentPage - 1) * postsPerPage;
+            const visiblePosts = filteredPosts.slice(
+                start,
+                start + postsPerPage
+            );
+
+            visiblePosts.forEach(function (post) {
+                post.style.display = "";
+            });
+
+            // 페이지가 하나 이하이면 페이지네이션 숨기기
+            if (totalPages <= 1) {
+                pagination.style.display = "none";
+                pageNumbers.innerHTML = "";
+                return;
+            }
+
+            pagination.style.display = "flex";
+            pageNumbers.innerHTML = "";
+
+            // 현재 페이지가 속한 번호 묶음
+            const groupIndex = Math.floor(
+                (currentPage - 1) / pagesPerGroup
+            );
+
+            const firstPage = groupIndex * pagesPerGroup + 1;
+            const lastPage = Math.min(
+                firstPage + pagesPerGroup - 1,
+                totalPages
+            );
+
+            // 페이지 번호 버튼 만들기
+            for (let page = firstPage; page <= lastPage; page++) {
+                const button = document.createElement("button");
+
+                button.type = "button";
+                button.textContent = String(page);
+
+                if (page === currentPage) {
+                    button.classList.add("active");
+                    button.setAttribute("aria-current", "page");
+                }
+
+                button.addEventListener("click", function () {
+                    if (page === currentPage) {
+                        return;
+                    }
+
+                    currentPage = page;
+                    writeURL(currentPage, category, false);
+                    render();
+
+                    window.scrollTo({
+                        top: 0,
+                        behavior: "smooth"
+                    });
+                });
+
+                pageNumbers.appendChild(button);
+            }
+
+            // 이전/다음 번호 묶음
+            prevButton.style.display =
+                firstPage > 1 ? "" : "none";
+
+            nextButton.style.display =
+                lastPage < totalPages ? "" : "none";
         }
 
-        // 카테고리 버튼 active 상태
-        buttons.forEach(button => {
-            const isActive =
-                button.dataset.category === currentCategory;
+        // 카테고리 변경
+        categoryButtons.forEach(function (button) {
+            button.addEventListener("click", function () {
+                const category = button.dataset.category;
 
-            button.classList.toggle("active", isActive);
+                currentPage = 1;
+                writeURL(1, category, false);
+                render();
+            });
+        });
 
-            if (isActive) {
-                button.setAttribute("aria-pressed", "true");
-            } else {
-                button.setAttribute("aria-pressed", "false");
+        // 이전 10개 페이지 번호
+        prevButton.addEventListener("click", function () {
+            const groupIndex = Math.floor(
+                (currentPage - 1) / pagesPerGroup
+            );
+
+            const targetPage = groupIndex * pagesPerGroup;
+
+            if (targetPage >= 1) {
+                currentPage = targetPage;
+                writeURL(currentPage, readURL().category, false);
+                render();
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
             }
         });
 
-        // 페이지가 범위를 벗어나면 마지막 페이지로 보정
-        if (totalPages > 0 && currentPage > totalPages) {
-            currentPage = totalPages;
-            updateURL(currentPage, currentCategory, true);
-        }
+        // 다음 10개 페이지 번호
+        nextButton.addEventListener("click", function () {
+            const groupIndex = Math.floor(
+                (currentPage - 1) / pagesPerGroup
+            );
 
-        // 모든 포스트 숨기기
-        allPosts.forEach(post => {
-            post.style.display = "none";
+            const targetPage = (groupIndex + 1) * pagesPerGroup + 1;
+            const category = readURL().category;
+            const totalPages = Math.ceil(
+                getFilteredPosts(category).length / postsPerPage
+            );
+
+            if (targetPage <= totalPages) {
+                currentPage = targetPage;
+                writeURL(currentPage, category, false);
+                render();
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+            }
         });
 
-        // 현재 페이지의 포스트만 표시
-        const startIndex = (currentPage - 1) * postsPerPage;
-
-        const visiblePosts = filteredPosts.slice(
-            startIndex,
-            startIndex + postsPerPage
-        );
-
-        visiblePosts.forEach(post => {
-            post.style.display = "";
+        // 브라우저 뒤로 가기 / 앞으로 가기
+        window.addEventListener("popstate", function () {
+            currentPage = readURL().page;
+            render();
         });
 
-        // 포스트가 없거나 페이지가 하나뿐이면 페이지네이션 숨김
-        if (totalPages <= 1) {
-            paginationContainer.style.display = "none";
-            return;
-        }
+        // 최초 로드
+        currentPage = readURL().page;
 
-        paginationContainer.style.display = "flex";
+        // 잘못된 카테고리 주소 처리
+        const initialCategory = readURL().category;
+        const validCategory = initialCategory === "all" ||
+            categoryButtons.some(function (button) {
+                return button.dataset.category === initialCategory;
+            });
 
-        renderPageNumbers(totalPages);
-    }
-
-    // 카테고리 클릭
-    buttons.forEach(button => {
-        button.addEventListener("click", () => {
-            const category = button.dataset.category;
-
+        if (!validCategory) {
+            writeURL(1, "all", true);
             currentPage = 1;
+        }
 
-            updateURL(1, category);
-            updateDisplay();
-        });
-    });
-
-    // 이전 페이지 번호 묶음
-    prevGroupBtn.addEventListener("click", () => {
-        const currentGroup = Math.floor(
-            (currentPage - 1) / pageButtonsPerGroup
-        );
-
-        goToPage(
-            currentGroup * pageButtonsPerGroup
-        );
-    });
-
-    // 다음 페이지 번호 묶음
-    nextGroupBtn.addEventListener("click", () => {
-        const currentGroup = Math.floor(
-            (currentPage - 1) / pageButtonsPerGroup
-        );
-
-        goToPage(
-            (currentGroup + 1) * pageButtonsPerGroup + 1
-        );
-    });
-
-    // 브라우저 뒤로 가기 / 앞으로 가기
-    window.addEventListener("popstate", () => {
-        currentPage = getPageFromURL();
-        updateDisplay();
-    });
-
-    // 최초 페이지 로드
-    currentPage = getPageFromURL();
-
-    // 잘못된 페이지 URL은 정상 페이지 범위로 보정
-    const initialTotalPages = Math.ceil(
-        getFilteredPosts().length / postsPerPage
-    );
-
-    if (currentPage > Math.max(1, initialTotalPages)) {
-        currentPage = Math.max(1, initialTotalPages);
-        updateURL(currentPage, getCategoryFromURL(), true);
+        render();
     }
 
-    updateDisplay();
-});
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initPagination);
+    } else {
+        initPagination();
+    }
+})();
 </script>
