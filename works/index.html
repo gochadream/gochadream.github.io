@@ -193,44 +193,54 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // 4. 페이지 이동 버튼 이벤트
     
-    // 이전 버튼: 현재 페이지에서 1페이지 이전으로 이동
+    // 4. 페이지 번호 묶음 단위로 이동
+
+    // 이전: 현재 페이지가 11이면 10으로, 21이면 20으로 이동
     prevBtn.addEventListener("click", (e) => {
         e.preventDefault();
 
-        if (currentPage > 1) {
-            currentPage--;
+        const pagesPerGroup = 10;
 
-            const params = new URLSearchParams(window.location.search);
+        const groupStart =
+            Math.floor((currentPage - 1) / pagesPerGroup)
+            * pagesPerGroup + 1;
 
-            if (currentPage === 1) {
-                params.delete("page");
-            } else {
-                params.set("page", currentPage);
-            }
-
-            const query = params.toString();
-
-            window.history.pushState(
-                null,
-                "",
-                window.location.pathname + (query ? "?" + query : "")
-            );
-
-            updateDisplay();
-
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
+        if (groupStart > 1) {
+            currentPage = groupStart - 1;
+        } else {
+            return;
         }
+
+        const params = new URLSearchParams(window.location.search);
+
+        if (currentPage === 1) {
+            params.delete("page");
+        } else {
+            params.set("page", currentPage);
+        }
+
+        const query = params.toString();
+
+        window.history.pushState(
+            null,
+            "",
+            window.location.pathname + (query ? "?" + query : "")
+        );
+
+        updateDisplay();
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
     });
 
-    // 다음 버튼: 현재 페이지에서 1페이지 다음으로 이동
+    // 다음: 현재 페이지가 10이면 11로, 20이면 21로 이동
     nextBtn.addEventListener("click", (e) => {
         e.preventDefault();
 
+        const pagesPerGroup = 10;
         const currentCategory = getCategoryFromURL();
 
         const filteredLength = allPosts.filter(post => {
@@ -242,35 +252,44 @@ document.addEventListener("DOMContentLoaded", () => {
                 .includes(currentCategory);
         }).length;
 
-        const totalPages = Math.ceil(filteredLength / postsPerPage);
+        const totalPages = Math.ceil(
+            filteredLength / postsPerPage
+        );
 
-        if (currentPage < totalPages) {
-            currentPage++;
+        const groupEnd =
+            (Math.floor((currentPage - 1) / pagesPerGroup) + 1)
+            * pagesPerGroup;
 
-            const params = new URLSearchParams(window.location.search);
-
-            if (currentPage === 1) {
-                params.delete("page");
-            } else {
-                params.set("page", currentPage);
-            }
-
-            const query = params.toString();
-
-            window.history.pushState(
-                null,
-                "",
-                window.location.pathname + (query ? "?" + query : "")
-            );
-
-            updateDisplay();
-
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
+        if (groupEnd < totalPages) {
+            currentPage = groupEnd + 1;
+        } else {
+            return;
         }
+
+        const params = new URLSearchParams(window.location.search);
+
+        if (currentPage === 1) {
+            params.delete("page");
+        } else {
+            params.set("page", currentPage);
+        }
+
+        const query = params.toString();
+
+        window.history.pushState(
+            null,
+            "",
+            window.location.pathname + (query ? "?" + query : "")
+        );
+
+        updateDisplay();
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
     });
+
 
 
     // 뒤로가기/앞으로가기 대응
