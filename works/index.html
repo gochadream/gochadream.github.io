@@ -103,16 +103,74 @@ document.addEventListener("DOMContentLoaded", () => {
 
         visiblePosts.forEach(post => post.style.display = "");
 
-        // 페이지네이션 컨트롤 표시/숨김 및 정보 업데이트
-        if (totalPages > 1) {
-            paginationContainer.style.display = "block";
-            pageInfo.textContent = `${currentPage} / ${totalPages}`;
+       
+        // 숫자형 페이지네이션
+        const pagesPerGroup = 10;
 
-            prevBtn.style.display = currentPage === 1 ? "none" : "inline-block";
-            nextBtn.style.display = currentPage === totalPages ? "none" : "inline-block";
+        if (totalPages > 1) {
+            paginationContainer.style.display = "flex";
+
+            const pageNumbers = document.getElementById("page-numbers");
+            pageNumbers.innerHTML = "";
+
+            const groupStart =
+                Math.floor((currentPage - 1) / pagesPerGroup)
+                * pagesPerGroup + 1;
+
+            const groupEnd = Math.min(
+                groupStart + pagesPerGroup - 1,
+                totalPages
+            );
+
+            for (let page = groupStart; page <= groupEnd; page++) {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.textContent = page;
+
+                if (page === currentPage) {
+                    btn.classList.add("active");
+                    btn.setAttribute("aria-current", "page");
+                }
+
+                btn.addEventListener("click", () => {
+                    currentPage = page;
+
+                    const params = new URLSearchParams(
+                        window.location.search
+                    );
+
+                    if (page === 1) {
+                        params.delete("page");
+                    } else {
+                        params.set("page", page);
+                    }
+
+                    const query = params.toString();
+                    const url = window.location.pathname +
+                        (query ? "?" + query : "");
+
+                    window.history.pushState(null, "", url);
+                    updateDisplay();
+
+                    window.scrollTo({
+                        top: 0,
+                        behavior: "smooth"
+                    });
+                });
+
+                pageNumbers.appendChild(btn);
+            }
+
+            prevBtn.style.display =
+                groupStart > 1 ? "inline-block" : "none";
+
+            nextBtn.style.display =
+                groupEnd < totalPages ? "inline-block" : "none";
+
         } else {
             paginationContainer.style.display = "none";
         }
+
     }
 
     // 3. 카테고리 클릭 시 URL 파라미터 변경
@@ -171,3 +229,72 @@ document.addEventListener("DOMContentLoaded", () => {
     updateDisplay();
 });
 </script>
+
+
+<style>
+    /* 페이지 번호 전체 영역 */
+    #pagination-controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 40px 0 32px;
+    }
+
+    /* 숫자 버튼 묶음 */
+    #page-numbers {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    /* 숫자 및 이전/다음 버튼 */
+    #pagination-controls button {
+        min-width: 40px;
+        height: 40px;
+        padding: 0 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        background: #fff;
+        color: #333;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    /* 마우스를 올렸을 때 */
+    #pagination-controls button:hover {
+        border-color: #333;
+        background: #f3f3f3;
+    }
+
+    /* 현재 페이지 버튼 */
+    #pagination-controls button.active {
+        background: #333;
+        color: #fff;
+        border-color: #333;
+        font-weight: 700;
+    }
+
+    /* 모바일 화면 */
+    @media (max-width: 480px) {
+        #pagination-controls {
+            gap: 5px;
+        }
+
+        #page-numbers {
+            gap: 4px;
+        }
+
+        #pagination-controls button {
+            min-width: 32px;
+            height: 36px;
+            padding: 0 7px;
+            font-size: 13px;
+        }
+    }
+
+</style>
