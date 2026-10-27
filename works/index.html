@@ -194,30 +194,84 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // 4. 페이지 이동 버튼 이벤트
+    
+    // 이전 버튼: 현재 페이지에서 1페이지 이전으로 이동
     prevBtn.addEventListener("click", (e) => {
         e.preventDefault();
+
         if (currentPage > 1) {
             currentPage--;
+
+            const params = new URLSearchParams(window.location.search);
+
+            if (currentPage === 1) {
+                params.delete("page");
+            } else {
+                params.set("page", currentPage);
+            }
+
+            const query = params.toString();
+
+            window.history.pushState(
+                null,
+                "",
+                window.location.pathname + (query ? "?" + query : "")
+            );
+
             updateDisplay();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
         }
     });
 
+    // 다음 버튼: 현재 페이지에서 1페이지 다음으로 이동
     nextBtn.addEventListener("click", (e) => {
         e.preventDefault();
+
         const currentCategory = getCategoryFromURL();
+
         const filteredLength = allPosts.filter(post => {
             if (currentCategory === "all") return true;
-            return (post.dataset.category || "").split(",").map(c => c.trim()).includes(currentCategory);
+
+            return (post.dataset.category || "")
+                .split(",")
+                .map(c => c.trim())
+                .includes(currentCategory);
         }).length;
+
         const totalPages = Math.ceil(filteredLength / postsPerPage);
 
         if (currentPage < totalPages) {
             currentPage++;
+
+            const params = new URLSearchParams(window.location.search);
+
+            if (currentPage === 1) {
+                params.delete("page");
+            } else {
+                params.set("page", currentPage);
+            }
+
+            const query = params.toString();
+
+            window.history.pushState(
+                null,
+                "",
+                window.location.pathname + (query ? "?" + query : "")
+            );
+
             updateDisplay();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
         }
     });
+
 
     // 뒤로가기/앞으로가기 대응
     window.addEventListener('popstate', () => {
